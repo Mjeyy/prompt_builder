@@ -1,0 +1,19 @@
+[project]
+name = "prompt-builder"
+version = "0.1.0"
+description = "Terminal app for building car prompts and copying to clipboard"
+requires-python = ">=3.10"
+dependencies = [
+    "questionary>=2.0.0",
+]
+
+[project.scripts]
+prompt-builder = "prompt_builder.main:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["prompt_builder*"]
