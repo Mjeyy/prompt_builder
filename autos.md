@@ -10,3 +10,4 @@
 | Chevrolet | Camaro | 6 | LT1 |
 | Ford | Focus | 3 | Duratec 2.0L |
 | Volkswagen | Tiguan | 1 | EA189 |
+| Лада | Гранта | 1 | дизель |
