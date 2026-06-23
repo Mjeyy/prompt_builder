@@ -60,3 +60,5 @@
 | BMW | i4 Convertible (Concept) | G26 EV | eDrive 40/50 Electric |
 | Porsche | 718 Electric | 982 EV | e-Core Electric Dual Motor |
 | Cadillac | Escalade | GMT K2XX | L86 |
+| Hyundai | Creta | GS | G4NA 2.0L MPI|
+| Volkswagen | Tiguan | 1(5N) | EA189 2.0L TDI |
