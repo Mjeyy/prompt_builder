@@ -14,7 +14,8 @@
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 **Правила заполнения полей:**
 
@@ -103,8 +104,8 @@ make | model | generation | engine | topic_id | topic_title | topic_category | s
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
-
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 **Правила заполнения полей:**
 
 1. **Базовые поля (копировать как есть в каждую строку):**
@@ -192,7 +193,8 @@ make | model | generation | engine | topic_id | topic_title | topic_category | s
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 **Правила заполнения полей:**
 
@@ -281,7 +283,8 @@ make | model | generation | engine | topic_id | topic_title | topic_category | s
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 **Правила заполнения полей:**
 
@@ -369,7 +372,8 @@ make | model | generation | engine | topic_id | topic_title | topic_category | s
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 **Правила заполнения полей:**
 
@@ -460,7 +464,8 @@ make | model | generation | engine | topic_id | topic_title | topic_category | s
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 **Правила заполнения полей:**
 
@@ -550,7 +555,8 @@ make | model | generation | engine | topic_id | topic_title | topic_category | s
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 **Правила заполнения полей:**
 
@@ -640,8 +646,8 @@ make | model | generation | engine | topic_id | topic_title | topic_category | s
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
-
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 **Правила заполнения полей:**
 
 1. **Базовые поля (копировать как есть в каждую строку):**
@@ -728,7 +734,8 @@ make | model | generation | engine | topic_id | topic_title | topic_category | s
 **Режим ответа:** Только одна markdown-таблица. Строго без вступления, без заключения, без рассуждений, без текста до и после таблицы.
 
 **Колонки (строго в этом порядке):**
-make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus
+| make | model | generation | engine | topic_id | topic_title | topic_category | subcategory | difficulty | consensus_level | tuning_stage | target_package | reference_solutions | summary | symptoms | diagnosis_main_steps | procedure_steps | requirements_hardware | requirements_software | requirements_consumables | reliability_note | warnings | community_consensus |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 **Правила заполнения полей:**
 
