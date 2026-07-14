@@ -65,4 +65,38 @@
 | Hyundai | Sonata | 7(YF)| G4NA 2.0L MPI|
 | BMW | 5 Series | E60 LCI | N52B25 2.5L I6| 
 | Kia | Cerato| TD | G4KD 2.0L GDI| 
-|Hummer|H2|I Рест|L92 6.2L V8|
+| Hummer|H2|I Рест|L92 6.2L V8|
+| Lada          | Vesta                    | I (2180)            | VAZ-21129 (1.6 16V)               |
+| Lada          | Vesta                    | I (2180)            | VAZ-21179 (1.8 16V)               |
+| Lada          | Granta                   | I Рестайлинг (2190) | VAZ-11186 (1.6 8V)                |
+| Chery         | Tiggo 7 Pro              | I                   | SQRF4J16 (1.6T)                   |
+| BMW           | 3-Series                 | VII (G20)           | B48B20 (2.0L Turbo)               |
+| BMW           | 3-Series                 | VI (F30)            | B48B20 (2.0L Turbo)               |
+| Cadillac      | Escalade                 | GMT K2XX            | L86 (6.2L V8)                     |
+| Kia           | Rio                      | III (UB)            | G4FC (1.6 Gamma)                  |
+| Kia           | Rio                      | IV (FB)             | G4FG (1.6 Gamma)                  |
+| Hyundai       | Solaris                  | I (RB)              | G4FC (1.6 Gamma)                  |
+| Hyundai       | Solaris                  | II (HC)             | G4FG (1.6 Gamma)                  |
+| Kia           | Sportage                 | III (SL)            | G4KD (2.0 MPI)                    |
+| Kia           | Sportage                 | IV (QL)             | 2.0 CRDi                          |
+| Toyota        | Camry                    | VII (XV70)          | A25A-FKS (2.5L)                   |
+| Toyota        | Camry                    | VI (XV50)           | 2AR-FE (2.5L)                     |
+| Toyota        | RAV4                     | IV (XA40)           | 2AR-FE (2.5L)                     |
+| Toyota        | Land Cruiser 200         | J200                | 1VD-FTV (4.5L Diesel)             |
+| Toyota        | Land Cruiser 200         | J200                | 1UR-FE (4.6L V8)                  |
+| Volkswagen    | Polo Sedan               | V (602)             | CFNA (1.6 MPI)                    |
+| Volkswagen    | Tiguan                   | II (AD1)            | CZDA (2.0 TSI)                    |
+| Volkswagen    | Tiguan                   | II (AD1)            | CZCA (1.4 TSI)                    |
+| Skoda         | Octavia                  | III (A7)            | EA211 (1.4 TSI)                   |
+| Skoda         | Octavia                  | II (A5)             | EA888 (1.8 TSI)                   |
+| Renault       | Duster                   | I (B0)              | F4R (2.0L)                        |
+| Renault       | Duster                   | I (B0)              | K9K (1.5 dCi)                     |
+| BMW           | 5-Series                 | VI (F10)            | N55B30 (3.0L Turbo)               |
+| BMW           | 5-Series                 | VI (F10)            | N57 (3.0L Diesel)                 |
+| BMW           | X5                       | III (F15)           | N57D30 (3.0L Diesel)              |
+| Mercedes-Benz | E-Class                  | V (W213)            | OM654 (2.0L Diesel)               |
+| Audi          | Q5                       | I (8R)              | EA888 (2.0 TFSI)                  |
+| Audi          | Q5                       | II (FY)             | DKZA (2.0 TFSI)                   |
+| Haval         | Jolion                   | I                   | GW4B15 (1.5T)                     |
+
+
