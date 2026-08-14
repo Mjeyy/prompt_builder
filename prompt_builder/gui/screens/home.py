@@ -22,11 +22,14 @@ class HomeScreen(ctk.CTkFrame):
         master: ctk.CTkFrame,
         on_builder: Callable[[], None],
         on_qa: Callable[[], None],
+        on_horoscope_auto: Callable[[], None],
+        on_horoscope_date: Callable[[], None],
     ) -> None:
         super().__init__(master, fg_color="transparent")
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
 
         title = ctk.CTkLabel(
             self,
@@ -34,7 +37,7 @@ class HomeScreen(ctk.CTkFrame):
             font=ui_font(28, "bold"),
             text_color=TEXT,
         )
-        title.grid(row=0, column=0, columnspan=2, sticky="w", padx=32, pady=(28, 4))
+        title.grid(row=0, column=0, columnspan=2, sticky="w", padx=32, pady=(20, 4))
 
         subtitle = ctk.CTkLabel(
             self,
@@ -51,7 +54,7 @@ class HomeScreen(ctk.CTkFrame):
             action="Открыть сборку",
             on_click=on_builder,
         )
-        builder_card.grid(row=2, column=0, sticky="nsew", padx=(32, 12), pady=(20, 32))
+        builder_card.grid(row=2, column=0, sticky="nsew", padx=(32, 12), pady=(12, 8))
 
         qa_card = _ModeCard(
             self,
@@ -60,7 +63,25 @@ class HomeScreen(ctk.CTkFrame):
             action="Открыть проверку",
             on_click=on_qa,
         )
-        qa_card.grid(row=2, column=1, sticky="nsew", padx=(12, 32), pady=(20, 32))
+        qa_card.grid(row=2, column=1, sticky="nsew", padx=(12, 32), pady=(12, 8))
+
+        horoscope_auto_card = _ModeCard(
+            self,
+            title="Гороскоп: описание",
+            description="Марка и модель из списка авто.\nПромпт описания знака копируется в буфер.",
+            action="Открыть описание",
+            on_click=on_horoscope_auto,
+        )
+        horoscope_auto_card.grid(row=3, column=0, sticky="nsew", padx=(32, 12), pady=(8, 24))
+
+        horoscope_date_card = _ModeCard(
+            self,
+            title="Гороскоп: прогноз",
+            description="Авто, дата старта по календарю и число дней.\nПромпт прогноза копируется в буфер.",
+            action="Открыть прогноз",
+            on_click=on_horoscope_date,
+        )
+        horoscope_date_card.grid(row=3, column=1, sticky="nsew", padx=(12, 32), pady=(8, 24))
 
 
 class _ModeCard(ctk.CTkFrame):
@@ -85,10 +106,10 @@ class _ModeCard(ctk.CTkFrame):
         ctk.CTkLabel(
             self,
             text=title,
-            font=ui_font(22, "bold"),
+            font=ui_font(20, "bold"),
             text_color=TEXT,
             anchor="w",
-        ).grid(row=0, column=0, sticky="ew", padx=28, pady=(28, 8))
+        ).grid(row=0, column=0, sticky="ew", padx=24, pady=(20, 6))
 
         ctk.CTkLabel(
             self,
@@ -97,7 +118,7 @@ class _ModeCard(ctk.CTkFrame):
             text_color=MUTED,
             justify="left",
             anchor="nw",
-        ).grid(row=1, column=0, sticky="new", padx=28, pady=(0, 16))
+        ).grid(row=1, column=0, sticky="new", padx=24, pady=(0, 12))
 
         ctk.CTkButton(
             self,
@@ -108,5 +129,5 @@ class _ModeCard(ctk.CTkFrame):
             fg_color=ACCENT,
             hover_color=ACCENT_HOVER,
             command=on_click,
-        ).grid(row=2, column=0, sticky="ew", padx=28, pady=(0, 28))
+        ).grid(row=2, column=0, sticky="ew", padx=24, pady=(0, 20))
         lower_frame_canvases(self)

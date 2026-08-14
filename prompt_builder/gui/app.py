@@ -8,6 +8,7 @@ import customtkinter as ctk
 from prompt_builder.gui.clickfix import install_window_click_fixes, lower_frame_canvases
 from prompt_builder.gui import PROJECT_ROOT
 from prompt_builder.gui.screens.home import HomeScreen
+from prompt_builder.gui.screens.horoscope import HoroscopeScreen
 from prompt_builder.gui.screens.prompt_builder import PromptBuilderScreen
 from prompt_builder.gui.screens.table_qa import TableQaScreen
 from prompt_builder.gui.theme import (
@@ -21,7 +22,9 @@ from prompt_builder.gui.theme import (
     apply_theme,
     ui_font,
 )
+from prompt_builder.models import HoroscopeMode
 from prompt_builder.parsers.autos import load_cars
+from prompt_builder.parsers.horoscope import load_horoscope_templates
 from prompt_builder.parsers.prompts import load_prompt_sections
 
 
@@ -62,6 +65,8 @@ class App(ctk.CTk):
                 self._body,
                 on_builder=self.show_builder,
                 on_qa=self.show_table_qa,
+                on_horoscope_auto=lambda: self.show_horoscope("auto"),
+                on_horoscope_date=lambda: self.show_horoscope("date"),
             )
         )
 
@@ -77,6 +82,20 @@ class App(ctk.CTk):
             return
         self._header.set_mode("Сборка промпта")
         self._set_body(PromptBuilderScreen(self._body, cars, sections))
+
+    def show_horoscope(self, mode: HoroscopeMode) -> None:
+        try:
+            cars = load_cars(PROJECT_ROOT / "autos.md")
+            templates = load_horoscope_templates(
+                PROJECT_ROOT / "horoscop_auto.md",
+                PROJECT_ROOT / "horoscop_date.md",
+            )
+        except (OSError, ValueError) as exc:
+            messagebox.showerror("Ошибка загрузки данных", str(exc), parent=self)
+            return
+        title = "Гороскоп: описание" if mode == "auto" else "Гороскоп: прогноз"
+        self._header.set_mode(title)
+        self._set_body(HoroscopeScreen(self._body, cars, templates, mode))
 
     def show_table_qa(self) -> None:
         self._header.set_mode("Проверка таблиц")
