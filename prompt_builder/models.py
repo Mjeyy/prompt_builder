@@ -18,6 +18,10 @@ WORK_MODE_LABELS: dict[WorkMode, str] = {
     "horoscope_date": "Гороскоп: прогноз",
 }
 
+BUILDER_LABEL = "Сборка промпта"
+TABLE_QA_LABEL = "Проверка таблиц"
+HOME_LABEL = "Главная"
+
 
 @dataclass(frozen=True)
 class Car:

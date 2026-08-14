@@ -1,0 +1,13 @@
+---
+description: GUI conventions for CustomTkinter screens
+globs: prompt_builder/gui/**/*.py
+alwaysApply: false
+---
+
+# GUI
+
+- Reuse `CarPickerPane`, `PromptPreviewPanel`, `ModeCard`, `SelectableList`, `MonthCalendar`.
+- Preview text must stay selectable (do not `state="disabled"` on the textbox). Copy only via the button; flash «Скопировано» on success.
+- Status lines use `MUTED` for hints, `SUCCESS` for copy, `DANGER` for failures. Do not mix selection hints and errors in a way that overwrites without new user action.
+- Hide the header «На главную» button on the home screen (`grid_remove`), do not leave it disabled.
+- Horoscope header titles must match `WORK_MODE_LABELS`.

@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.egg-info/
+dist/
+build/
+.DS_Store
+
+# Large prompt templates — format is documented in README
+data/repair_prompts.md
+data/tuning_prompts.md
+
+# Sample article tables for GUI QA
+docs/samples/

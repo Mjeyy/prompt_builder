@@ -1,0 +1,13 @@
+---
+description: Python conventions for Prompt Builder
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python
+
+- Target Python 3.10+. Use `from __future__ import annotations` in GUI modules.
+- Domain types are dataclasses in `models.py`. Screen labels come from `WORK_MODE_LABELS` / `CATEGORY_LABELS` / `BUILDER_LABEL` / `TABLE_QA_LABEL`.
+- Do not add dependencies unless existing ones cannot do the job. Tests use stdlib `unittest`.
+- Do not duplicate car search, preview, or copy-button UI; use widgets in `prompt_builder/gui/widgets.py`.
+- Parsers raise `ValueError` with a filename. Clipboard errors stay `ClipboardError`.

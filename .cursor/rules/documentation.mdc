@@ -1,0 +1,19 @@
+---
+description: When to update README, RUNBOOK, and CHANGELOG
+alwaysApply: true
+---
+
+# Documentation updates
+
+Update docs in the same change as the code. See `CONTRIBUTING.md`.
+
+| Change | Update |
+|--------|--------|
+| User-facing behavior (modes, buttons, data paths, placeholders) | README + RUNBOOK + CHANGELOG |
+| Install, launch, troubleshooting | RUNBOOK + CHANGELOG |
+| Internal refactor, same UX | CHANGELOG only |
+| New or renamed data files | README + RUNBOOK trees and «Как обновлять данные» + CHANGELOG |
+
+- Keep a Changelog: add a bullet under `[Unreleased]` or the current version.
+- Do not leave templates in the repo root. Horoscope files are `horoscope_*.md`, never `horoscop_*.md`.
+- Do not invent a legacy `.cursorrules` file; use `.cursor/rules/*.mdc`.

@@ -6,7 +6,6 @@ from tkinter import filedialog, messagebox
 
 import customtkinter as ctk
 
-from prompt_builder.gui import PROJECT_ROOT
 from prompt_builder.gui.theme import (
     ACCENT,
     ACCENT_HOVER,
@@ -20,6 +19,7 @@ from prompt_builder.gui.theme import (
     WARNING,
     ui_font,
 )
+from prompt_builder.paths import DOCS_SAMPLES_DIR, PROJECT_ROOT
 from prompt_builder.services.table_file import (
     EXPECTED_PARAGRAPHS,
     MarkdownTable,
@@ -34,8 +34,6 @@ from prompt_builder.services.table_file import (
     set_row_summary,
     summary_to_editor,
 )
-
-DOCS_DIR = PROJECT_ROOT / "docs"
 
 
 class TableQaScreen(ctk.CTkFrame):
@@ -126,7 +124,7 @@ class TableQaScreen(ctk.CTkFrame):
         ).pack(anchor="w")
 
     def _open_file(self) -> None:
-        initial = str(DOCS_DIR if DOCS_DIR.is_dir() else PROJECT_ROOT)
+        initial = str(DOCS_SAMPLES_DIR if DOCS_SAMPLES_DIR.is_dir() else PROJECT_ROOT)
         chosen = filedialog.askopenfilename(
             title="Открыть таблицу",
             initialdir=initial,
@@ -362,11 +360,46 @@ class TableQaScreen(ctk.CTkFrame):
             text="Сохранить и далее",
             font=ui_font(14, "bold"),
             height=42,
-            width=200,
+            width=180,
             fg_color=ACCENT,
             hover_color=ACCENT_HOVER,
             command=self._save_and_next,
         ).pack(side="left")
+
+        ctk.CTkButton(
+            actions,
+            text="Пропустить",
+            font=ui_font(13),
+            height=42,
+            width=120,
+            fg_color=SURFACE_ALT,
+            hover_color=BORDER,
+            command=self._skip,
+        ).pack(side="left", padx=(8, 0))
+
+        back_button = ctk.CTkButton(
+            actions,
+            text="Назад",
+            font=ui_font(13),
+            height=42,
+            width=100,
+            fg_color=SURFACE_ALT,
+            hover_color=BORDER,
+            command=self._go_back,
+            state="normal" if self._error_index > 0 else "disabled",
+        )
+        back_button.pack(side="left", padx=(8, 0))
+
+        ctk.CTkButton(
+            actions,
+            text="К результатам",
+            font=ui_font(13),
+            height=42,
+            width=140,
+            fg_color=SURFACE_ALT,
+            hover_color=BORDER,
+            command=self._show_results,
+        ).pack(side="left", padx=(8, 0))
 
         ctk.CTkLabel(
             actions,
@@ -414,6 +447,21 @@ class TableQaScreen(ctk.CTkFrame):
         if self._error_index >= len(self._errors):
             self._on_queue_done()
             return
+        self._show_editor()
+
+    def _skip(self) -> None:
+        if self._error_index >= len(self._errors):
+            return
+        self._error_index += 1
+        if self._error_index >= len(self._errors):
+            self._on_queue_done()
+            return
+        self._show_editor()
+
+    def _go_back(self) -> None:
+        if self._error_index <= 0:
+            return
+        self._error_index -= 1
         self._show_editor()
 
     def _on_queue_done(self) -> None:

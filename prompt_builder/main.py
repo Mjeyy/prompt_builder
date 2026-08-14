@@ -1,23 +1,6 @@
 import sys
-from pathlib import Path
 
-from prompt_builder.models import (
-    Car,
-    Category,
-    HoroscopeForecastSelection,
-    HoroscopeTemplates,
-    PromptSection,
-    Selection,
-    WorkMode,
-)
-from prompt_builder.parsers.autos import load_cars
-from prompt_builder.parsers.horoscope import load_horoscope_templates
-from prompt_builder.parsers.prompts import load_prompt_sections
-from prompt_builder.services.prompt_builder import (
-    build_horoscope_auto_prompt,
-    build_horoscope_date_prompt,
-)
-from prompt_builder.ui.menu import (
+from prompt_builder.cli.menu import (
     PostAction,
     build_selection_prompt,
     copy_and_report,
@@ -30,20 +13,35 @@ from prompt_builder.ui.menu import (
     select_section,
     select_start_date,
 )
-
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from prompt_builder.models import (
+    Car,
+    Category,
+    HoroscopeForecastSelection,
+    HoroscopeTemplates,
+    PromptSection,
+    Selection,
+    WorkMode,
+)
+from prompt_builder.parsers.autos import load_cars
+from prompt_builder.parsers.horoscope import load_horoscope_templates
+from prompt_builder.parsers.prompts import load_prompt_sections
+from prompt_builder.paths import (
+    AUTOS_PATH,
+    HOROSCOPE_AUTO_PATH,
+    HOROSCOPE_DATE_PATH,
+    REPAIR_PROMPTS_PATH,
+    TUNING_PROMPTS_PATH,
+)
+from prompt_builder.services.prompt_builder import (
+    build_horoscope_auto_prompt,
+    build_horoscope_date_prompt,
+)
 
 
 def _load_data() -> tuple[list[Car], list[PromptSection], HoroscopeTemplates]:
-    cars = load_cars(PROJECT_ROOT / "autos.md")
-    sections = load_prompt_sections(
-        PROJECT_ROOT / "repair_prompts.md",
-        PROJECT_ROOT / "tuning_prompts.md",
-    )
-    templates = load_horoscope_templates(
-        PROJECT_ROOT / "horoscop_auto.md",
-        PROJECT_ROOT / "horoscop_date.md",
-    )
+    cars = load_cars(AUTOS_PATH)
+    sections = load_prompt_sections(REPAIR_PROMPTS_PATH, TUNING_PROMPTS_PATH)
+    templates = load_horoscope_templates(HOROSCOPE_AUTO_PATH, HOROSCOPE_DATE_PATH)
     return cars, sections, templates
 
 

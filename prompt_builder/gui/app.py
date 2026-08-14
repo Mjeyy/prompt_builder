@@ -6,7 +6,6 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 from prompt_builder.gui.clickfix import install_window_click_fixes, lower_frame_canvases
-from prompt_builder.gui import PROJECT_ROOT
 from prompt_builder.gui.screens.home import HomeScreen
 from prompt_builder.gui.screens.horoscope import HoroscopeScreen
 from prompt_builder.gui.screens.prompt_builder import PromptBuilderScreen
@@ -17,15 +16,21 @@ from prompt_builder.gui.theme import (
     BG,
     MUTED,
     SURFACE,
-    SURFACE_ALT,
     TEXT,
     apply_theme,
     ui_font,
 )
-from prompt_builder.models import HoroscopeMode
+from prompt_builder.models import BUILDER_LABEL, HOME_LABEL, TABLE_QA_LABEL, WORK_MODE_LABELS, HoroscopeMode
 from prompt_builder.parsers.autos import load_cars
 from prompt_builder.parsers.horoscope import load_horoscope_templates
 from prompt_builder.parsers.prompts import load_prompt_sections
+from prompt_builder.paths import (
+    AUTOS_PATH,
+    HOROSCOPE_AUTO_PATH,
+    HOROSCOPE_DATE_PATH,
+    REPAIR_PROMPTS_PATH,
+    TUNING_PROMPTS_PATH,
+)
 
 
 class App(ctk.CTk):
@@ -59,7 +64,7 @@ class App(ctk.CTk):
         self.after_idle(lambda: lower_frame_canvases(self))
 
     def show_home(self) -> None:
-        self._header.set_mode("Главная", show_home=False)
+        self._header.set_mode(HOME_LABEL, show_home=False)
         self._set_body(
             HomeScreen(
                 self._body,
@@ -72,33 +77,31 @@ class App(ctk.CTk):
 
     def show_builder(self) -> None:
         try:
-            cars = load_cars(PROJECT_ROOT / "autos.md")
-            sections = load_prompt_sections(
-                PROJECT_ROOT / "repair_prompts.md",
-                PROJECT_ROOT / "tuning_prompts.md",
-            )
+            cars = load_cars(AUTOS_PATH)
+            sections = load_prompt_sections(REPAIR_PROMPTS_PATH, TUNING_PROMPTS_PATH)
         except (OSError, ValueError) as exc:
             messagebox.showerror("Ошибка загрузки данных", str(exc), parent=self)
             return
-        self._header.set_mode("Сборка промпта")
+        self._header.set_mode(BUILDER_LABEL)
         self._set_body(PromptBuilderScreen(self._body, cars, sections))
 
     def show_horoscope(self, mode: HoroscopeMode) -> None:
         try:
-            cars = load_cars(PROJECT_ROOT / "autos.md")
-            templates = load_horoscope_templates(
-                PROJECT_ROOT / "horoscop_auto.md",
-                PROJECT_ROOT / "horoscop_date.md",
-            )
+            cars = load_cars(AUTOS_PATH)
+            templates = load_horoscope_templates(HOROSCOPE_AUTO_PATH, HOROSCOPE_DATE_PATH)
         except (OSError, ValueError) as exc:
             messagebox.showerror("Ошибка загрузки данных", str(exc), parent=self)
             return
-        title = "Гороскоп: описание" if mode == "auto" else "Гороскоп: прогноз"
+        title = (
+            WORK_MODE_LABELS["horoscope_auto"]
+            if mode == "auto"
+            else WORK_MODE_LABELS["horoscope_date"]
+        )
         self._header.set_mode(title)
         self._set_body(HoroscopeScreen(self._body, cars, templates, mode))
 
     def show_table_qa(self) -> None:
-        self._header.set_mode("Проверка таблиц")
+        self._header.set_mode(TABLE_QA_LABEL)
         self._set_body(TableQaScreen(self._body))
 
 
@@ -131,7 +134,7 @@ class _Header(ctk.CTkFrame):
             font=ui_font(13),
             width=120,
             height=32,
-            fg_color=SURFACE_ALT,
+            fg_color=ACCENT,
             hover_color=ACCENT_HOVER,
             command=self._go_home,
         )
@@ -142,11 +145,10 @@ class _Header(ctk.CTkFrame):
 
     def set_mode(self, title: str, show_home: bool = True) -> None:
         self._mode.configure(text=title)
-        self._home_button.configure(state="normal" if show_home else "disabled")
         if show_home:
-            self._home_button.configure(fg_color=ACCENT)
+            self._home_button.grid()
         else:
-            self._home_button.configure(fg_color=SURFACE_ALT)
+            self._home_button.grid_remove()
 
 
 def main() -> None:

@@ -1,1 +1,1 @@
-"""Terminal prompt builder for car repair and tuning prompts."""
+"""Prompt Builder: car repair, tuning, and horoscope prompts, plus table QA."""

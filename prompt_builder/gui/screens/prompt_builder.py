@@ -5,19 +5,16 @@ import customtkinter as ctk
 from prompt_builder.gui.theme import (
     ACCENT,
     ACCENT_HOVER,
-    BORDER,
     DANGER,
-    MUTED,
     SUCCESS,
     SURFACE,
     SURFACE_ALT,
     TEXT,
     ui_font,
 )
-from prompt_builder.gui.widgets import SelectableList
+from prompt_builder.gui.widgets import CarPickerPane, PromptPreviewPanel, SelectableList, copy_prompt
 from prompt_builder.models import CATEGORY_LABELS, Car, Category, PromptSection, Selection
 from prompt_builder.parsers.prompts import sections_for_category
-from prompt_builder.services.clipboard import ClipboardError, copy_to_clipboard
 from prompt_builder.services.prompt_builder import build_prompt
 
 
@@ -29,7 +26,6 @@ class PromptBuilderScreen(ctk.CTkFrame):
         sections: list[PromptSection],
     ) -> None:
         super().__init__(master, fg_color="transparent")
-        self._cars = cars
         self._sections = sections
         self._category: Category = "repair"
         self._car: Car | None = None
@@ -39,39 +35,11 @@ class PromptBuilderScreen(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self._build_car_pane()
+        self._car_picker = CarPickerPane(self, cars, on_select=self._on_car_selected)
+        self._car_picker.grid(row=0, column=0, sticky="nsew", padx=(24, 12), pady=20)
         self._build_work_pane()
-        self._refresh_cars()
         self._refresh_sections()
         self._refresh_preview()
-
-    def _build_car_pane(self) -> None:
-        pane = ctk.CTkFrame(self, fg_color=SURFACE, corner_radius=16)
-        pane.grid(row=0, column=0, sticky="nsew", padx=(24, 12), pady=20)
-        pane.grid_rowconfigure(2, weight=1)
-        pane.grid_columnconfigure(0, weight=1)
-
-        ctk.CTkLabel(
-            pane,
-            text="Автомобиль",
-            font=ui_font(16, "bold"),
-            text_color=TEXT,
-            anchor="w",
-        ).grid(row=0, column=0, sticky="ew", padx=16, pady=(16, 8))
-
-        self._search = ctk.CTkEntry(
-            pane,
-            placeholder_text="Поиск по марке, модели, мотору…",
-            font=ui_font(13),
-            height=36,
-            fg_color=SURFACE_ALT,
-            border_color=BORDER,
-        )
-        self._search.grid(row=1, column=0, sticky="ew", padx=16, pady=(0, 8))
-        self._search.bind("<KeyRelease>", lambda _event: self._refresh_cars())
-
-        self._car_list = SelectableList(pane, on_select=self._on_car_selected)
-        self._car_list.grid(row=2, column=0, sticky="nsew", padx=10, pady=(0, 16))
 
     def _build_work_pane(self) -> None:
         pane = ctk.CTkFrame(self, fg_color="transparent")
@@ -116,70 +84,9 @@ class PromptBuilderScreen(ctk.CTkFrame):
         self._section_list.grid(row=2, column=0, sticky="ew", pady=(0, 12))
         self._section_list.configure(height=180)
 
-        preview_frame = ctk.CTkFrame(pane, fg_color=SURFACE, corner_radius=16)
-        preview_frame.grid(row=3, column=0, sticky="nsew")
-        preview_frame.grid_rowconfigure(1, weight=1)
-        preview_frame.grid_columnconfigure(0, weight=1)
-
-        ctk.CTkLabel(
-            preview_frame,
-            text="Превью промпта",
-            font=ui_font(16, "bold"),
-            text_color=TEXT,
-            anchor="w",
-        ).grid(row=0, column=0, sticky="ew", padx=16, pady=(14, 6))
-
-        self._preview = ctk.CTkTextbox(
-            preview_frame,
-            font=ui_font(13),
-            fg_color=SURFACE_ALT,
-            text_color=TEXT,
-            wrap="word",
-            activate_scrollbars=True,
-        )
-        self._preview.grid(row=1, column=0, sticky="nsew", padx=16, pady=(0, 12))
-        self._preview.configure(state="disabled")
-
-        actions = ctk.CTkFrame(pane, fg_color="transparent")
-        actions.grid(row=4, column=0, sticky="ew", pady=(12, 0))
-        actions.grid_columnconfigure(0, weight=1)
-
-        self._status = ctk.CTkLabel(
-            actions,
-            text="Выберите авто и раздел",
-            font=ui_font(13),
-            text_color=MUTED,
-            anchor="w",
-        )
-        self._status.grid(row=0, column=0, sticky="ew", pady=(0, 10))
-
-        buttons = ctk.CTkFrame(actions, fg_color="transparent")
-        buttons.grid(row=1, column=0, sticky="ew")
-
-        self._copy_button = ctk.CTkButton(
-            buttons,
-            text="Скопировать в буфер",
-            font=ui_font(14, "bold"),
-            height=40,
-            fg_color=ACCENT,
-            hover_color=ACCENT_HOVER,
-            command=self._copy,
-        )
-        self._copy_button.pack(side="left")
-
-    def _refresh_cars(self) -> None:
-        query = self._search.get().strip().lower()
-        items: list[tuple[str, Car]] = []
-        for car in self._cars:
-            label = car.display()
-            if query and query not in label.lower():
-                continue
-            items.append((label, car))
-        selected = self._car if self._car in {item[1] for item in items} else None
-        if selected is None:
-            self._car = None
-        self._car_list.set_items(items, selected=selected)
-        self._refresh_preview()
+        self._preview = PromptPreviewPanel(pane, on_copy=self._copy)
+        self._preview.grid(row=3, column=0, sticky="nsew")
+        self._preview.set_status("Выберите авто и раздел")
 
     def _refresh_sections(self) -> None:
         category_sections = sections_for_category(self._sections, self._category)
@@ -189,9 +96,12 @@ class PromptBuilderScreen(ctk.CTkFrame):
             self._section = None
         self._section_list.set_items(items, selected=selected)
 
-    def _on_car_selected(self, car: Car) -> None:
+    def _on_car_selected(self, car: Car | None) -> None:
         self._car = car
-        self._set_status(f"Авто: {car.display()}", MUTED)
+        if car is None:
+            self._preview.set_status("Выберите авто и раздел")
+        else:
+            self._preview.set_status(f"Авто: {car.display()}")
         self._refresh_preview()
 
     def _on_section_selected(self, section: PromptSection) -> None:
@@ -211,32 +121,24 @@ class PromptBuilderScreen(ctk.CTkFrame):
 
     def _refresh_preview(self) -> None:
         prompt = self._current_prompt()
-        self._preview.configure(state="normal")
-        self._preview.delete("1.0", "end")
-        if prompt is None:
-            self._preview.insert("1.0", "Выберите автомобиль и раздел — здесь появится готовый промпт.")
-            self._copy_button.configure(state="disabled")
-        else:
-            self._preview.insert("1.0", prompt)
-            self._copy_button.configure(state="normal")
-        self._preview.configure(state="disabled")
-
-    def _copy(self) -> None:
-        prompt = self._current_prompt()
-        if prompt is None or self._car is None or self._section is None:
-            self._set_status("Сначала выберите авто и раздел", DANGER)
-            return
-        try:
-            copy_to_clipboard(prompt)
-        except ClipboardError as exc:
-            self._set_status(f"Не удалось скопировать: {exc}", DANGER)
-            return
-
-        selection = Selection(car=self._car, section=self._section)
-        self._set_status(
-            f"Промпт скопирован · {selection.car.display()} · {selection.category_label} · {selection.section.display()}",
-            SUCCESS,
+        self._preview.set_prompt(
+            prompt,
+            "Выберите автомобиль и раздел — здесь появится готовый промпт.",
         )
 
-    def _set_status(self, text: str, color: str) -> None:
-        self._status.configure(text=text, text_color=color)
+    def _copy(self) -> bool:
+        prompt = self._current_prompt()
+        if prompt is None or self._car is None or self._section is None:
+            self._preview.set_status("Сначала выберите авто и раздел", DANGER)
+            return False
+        error = copy_prompt(prompt)
+        if error is not None:
+            self._preview.set_status(f"Не удалось скопировать: {error}", DANGER)
+            return False
+        selection = Selection(car=self._car, section=self._section)
+        self._preview.set_status(
+            f"Промпт скопирован · {selection.car.display()} · "
+            f"{selection.category_label} · {selection.section.display()}",
+            SUCCESS,
+        )
+        return True

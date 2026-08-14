@@ -12,14 +12,23 @@ from prompt_builder.gui.theme import (
     ACCENT,
     ACCENT_HOVER,
     BORDER,
+    CARD_HOVER,
+    DANGER,
     MUTED,
+    SUCCESS,
     SURFACE,
     SURFACE_ALT,
     TEXT,
     ui_font,
 )
+from prompt_builder.models import Car
+from prompt_builder.services.clipboard import ClipboardError, copy_to_clipboard
 
 T = TypeVar("T")
+
+_COPY_LABEL = "Скопировать в буфер"
+_COPIED_LABEL = "Скопировано"
+_COPY_FLASH_MS = 1500
 
 
 class SelectableList(ctk.CTkScrollableFrame):
@@ -99,6 +108,268 @@ class SelectableList(ctk.CTkScrollableFrame):
                 button.configure(fg_color="transparent", hover_color=SURFACE_ALT, text_color=TEXT)
 
 
+class CarPickerPane(ctk.CTkFrame):
+    def __init__(
+        self,
+        master: Any,
+        cars: Sequence[Car],
+        on_select: Callable[[Car | None], None],
+        **kwargs: object,
+    ) -> None:
+        super().__init__(master, fg_color=SURFACE, corner_radius=16, **kwargs)
+        self._cars = list(cars)
+        self._on_select = on_select
+        self._car: Car | None = None
+
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkLabel(
+            self,
+            text="Автомобиль",
+            font=ui_font(16, "bold"),
+            text_color=TEXT,
+            anchor="w",
+        ).grid(row=0, column=0, sticky="ew", padx=16, pady=(16, 8))
+
+        self._search = ctk.CTkEntry(
+            self,
+            placeholder_text="Поиск по марке, модели, мотору…",
+            font=ui_font(13),
+            height=36,
+            fg_color=SURFACE_ALT,
+            border_color=BORDER,
+        )
+        self._search.grid(row=1, column=0, sticky="ew", padx=16, pady=(0, 8))
+        self._search.bind("<KeyRelease>", lambda _event: self._refresh_cars())
+
+        self._car_list = SelectableList(self, on_select=self._on_car_selected)
+        self._car_list.grid(row=2, column=0, sticky="nsew", padx=10, pady=(0, 16))
+        self._refresh_cars()
+
+    @property
+    def selected(self) -> Car | None:
+        return self._car
+
+    def _on_car_selected(self, car: Car) -> None:
+        self._car = car
+        self._on_select(car)
+
+    def _refresh_cars(self) -> None:
+        query = self._search.get().strip().lower()
+        items: list[tuple[str, Car]] = []
+        for car in self._cars:
+            label = car.display()
+            if query and query not in label.lower():
+                continue
+            items.append((label, car))
+        selected = self._car if self._car in {item[1] for item in items} else None
+        if selected is None and self._car is not None:
+            self._car = None
+            self._on_select(None)
+        self._car_list.set_items(items, selected=selected)
+
+
+class PromptPreviewPanel(ctk.CTkFrame):
+    def __init__(
+        self,
+        master: Any,
+        on_copy: Callable[[], bool],
+        title: str = "Превью промпта",
+        **kwargs: object,
+    ) -> None:
+        super().__init__(master, fg_color="transparent", **kwargs)
+        self._on_copy = on_copy
+        self._flash_job: str | None = None
+        self._has_prompt = False
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        preview_frame = ctk.CTkFrame(self, fg_color=SURFACE, corner_radius=16)
+        preview_frame.grid(row=0, column=0, sticky="nsew")
+        preview_frame.grid_rowconfigure(1, weight=1)
+        preview_frame.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkLabel(
+            preview_frame,
+            text=title,
+            font=ui_font(16, "bold"),
+            text_color=TEXT,
+            anchor="w",
+        ).grid(row=0, column=0, sticky="ew", padx=16, pady=(14, 6))
+
+        self._preview = ctk.CTkTextbox(
+            preview_frame,
+            font=ui_font(13),
+            fg_color=SURFACE_ALT,
+            text_color=TEXT,
+            wrap="word",
+            activate_scrollbars=True,
+        )
+        self._preview.grid(row=1, column=0, sticky="nsew", padx=16, pady=(0, 12))
+        self._preview.bind("<Key>", self._block_edit)
+
+        actions = ctk.CTkFrame(self, fg_color="transparent")
+        actions.grid(row=1, column=0, sticky="ew", pady=(12, 0))
+        actions.grid_columnconfigure(0, weight=1)
+
+        self._status = ctk.CTkLabel(
+            actions,
+            text="",
+            font=ui_font(13),
+            text_color=MUTED,
+            anchor="w",
+        )
+        self._status.grid(row=0, column=0, sticky="ew", pady=(0, 10))
+
+        self._copy_button = ctk.CTkButton(
+            actions,
+            text=_COPY_LABEL,
+            font=ui_font(14, "bold"),
+            height=40,
+            fg_color=ACCENT,
+            hover_color=ACCENT_HOVER,
+            command=self._copy,
+        )
+        self._copy_button.grid(row=1, column=0, sticky="w")
+        self._copy_button.configure(state="disabled")
+
+    def set_prompt(self, prompt: str | None, placeholder: str) -> None:
+        self._has_prompt = prompt is not None
+        self._preview.delete("1.0", "end")
+        self._preview.insert("1.0", prompt if prompt is not None else placeholder)
+        self._copy_button.configure(state="normal" if prompt is not None else "disabled")
+
+    def set_status(self, text: str, color: str = MUTED) -> None:
+        self._status.configure(text=text, text_color=color)
+
+    def _copy(self) -> None:
+        if not self._has_prompt:
+            self.set_status("Сначала соберите промпт", DANGER)
+            return
+        if not self._on_copy():
+            return
+        self._flash_copied()
+
+    def _flash_copied(self) -> None:
+        if self._flash_job is not None:
+            self.after_cancel(self._flash_job)
+        self._copy_button.configure(text=_COPIED_LABEL)
+        self._flash_job = self.after(_COPY_FLASH_MS, self._restore_copy_label)
+
+    def _restore_copy_label(self) -> None:
+        self._flash_job = None
+        self._copy_button.configure(text=_COPY_LABEL)
+
+    @staticmethod
+    def _block_edit(event: Any) -> str | None:
+        if event.keysym in {
+            "Left",
+            "Right",
+            "Up",
+            "Down",
+            "Home",
+            "End",
+            "Prior",
+            "Next",
+            "Shift_L",
+            "Shift_R",
+            "Control_L",
+            "Control_R",
+            "Meta_L",
+            "Meta_R",
+            "Command",
+        }:
+            return None
+        modifiers = int(getattr(event, "state", 0))
+        if modifiers & 0xC and event.keysym.lower() in {"c", "a"}:
+            return None
+        return "break"
+
+
+def copy_prompt(prompt: str) -> str | None:
+    """Copy text to the clipboard. Returns an error message, or None on success."""
+    try:
+        copy_to_clipboard(prompt)
+    except ClipboardError as exc:
+        return str(exc)
+    return None
+
+
+class ModeCard(ctk.CTkFrame):
+    def __init__(
+        self,
+        master: Any,
+        title: str,
+        description: str,
+        action: str,
+        on_click: Callable[[], None],
+        **kwargs: object,
+    ) -> None:
+        super().__init__(
+            master,
+            fg_color=SURFACE,
+            corner_radius=16,
+            border_width=1,
+            border_color=BORDER,
+            **kwargs,
+        )
+        self._on_click = on_click
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        title_label = ctk.CTkLabel(
+            self,
+            text=title,
+            font=ui_font(20, "bold"),
+            text_color=TEXT,
+            anchor="w",
+        )
+        title_label.grid(row=0, column=0, sticky="ew", padx=24, pady=(20, 6))
+
+        description_label = ctk.CTkLabel(
+            self,
+            text=description,
+            font=ui_font(14),
+            text_color=MUTED,
+            justify="left",
+            anchor="nw",
+        )
+        description_label.grid(row=1, column=0, sticky="new", padx=24, pady=(0, 12))
+
+        ctk.CTkButton(
+            self,
+            text=action,
+            font=ui_font(14, "bold"),
+            height=42,
+            corner_radius=10,
+            fg_color=ACCENT,
+            hover_color=ACCENT_HOVER,
+            command=on_click,
+        ).grid(row=2, column=0, sticky="ew", padx=24, pady=(0, 20))
+
+        for widget in (self, title_label, description_label):
+            widget.bind("<Button-1>", self._handle_click)
+            widget.bind("<Enter>", self._on_enter)
+            widget.bind("<Leave>", self._on_leave)
+        lower_frame_canvases(self)
+
+    def _handle_click(self, _event: Any) -> None:
+        self._on_click()
+
+    def _on_enter(self, _event: Any) -> None:
+        self.configure(fg_color=CARD_HOVER)
+
+    def _on_leave(self, event: Any) -> None:
+        x, y = event.x_root, event.y_root
+        left = self.winfo_rootx()
+        top = self.winfo_rooty()
+        if left <= x < left + self.winfo_width() and top <= y < top + self.winfo_height():
+            return
+        self.configure(fg_color=SURFACE)
+
+
 _MONTHS_RU = (
     "",
     "Январь",
@@ -174,7 +445,18 @@ class MonthCalendar(ctk.CTkFrame):
             fg_color=SURFACE_ALT,
             hover_color=ACCENT_HOVER,
             command=self._next_month,
-        ).grid(row=0, column=2, sticky="e")
+        ).grid(row=0, column=2, sticky="e", padx=(0, 8))
+
+        ctk.CTkButton(
+            header,
+            text="Сегодня",
+            width=88,
+            height=32,
+            font=ui_font(13),
+            fg_color=SURFACE_ALT,
+            hover_color=ACCENT_HOVER,
+            command=self.go_today,
+        ).grid(row=0, column=3, sticky="e")
 
         for col, name in enumerate(_WEEKDAYS_RU):
             ctk.CTkLabel(
@@ -194,6 +476,14 @@ class MonthCalendar(ctk.CTkFrame):
     @property
     def selected(self) -> date:
         return self._selected
+
+    def go_today(self) -> None:
+        today = date.today()
+        self._selected = today
+        self._year = today.year
+        self._month = today.month
+        self._rebuild_days()
+        self._on_change(today)
 
     def _shift_month(self, delta: int) -> None:
         month = self._month + delta
