@@ -8,6 +8,7 @@ import customtkinter as ctk
 from prompt_builder.gui.clickfix import install_window_click_fixes, lower_frame_canvases
 from prompt_builder.gui.screens.home import HomeScreen
 from prompt_builder.gui.screens.horoscope import HoroscopeScreen
+from prompt_builder.gui.screens.links import LinksScreen
 from prompt_builder.gui.screens.prompt_builder import PromptBuilderScreen
 from prompt_builder.gui.screens.table_qa import TableQaScreen
 from prompt_builder.gui.theme import (
@@ -23,11 +24,13 @@ from prompt_builder.gui.theme import (
 from prompt_builder.models import BUILDER_LABEL, HOME_LABEL, TABLE_QA_LABEL, WORK_MODE_LABELS, HoroscopeMode
 from prompt_builder.parsers.autos import load_cars
 from prompt_builder.parsers.horoscope import load_horoscope_templates
+from prompt_builder.parsers.links import load_links_template
 from prompt_builder.parsers.prompts import load_prompt_sections
 from prompt_builder.paths import (
     AUTOS_PATH,
     HOROSCOPE_AUTO_PATH,
     HOROSCOPE_DATE_PATH,
+    LINKS_PATH,
     REPAIR_PROMPTS_PATH,
     TUNING_PROMPTS_PATH,
 )
@@ -72,6 +75,7 @@ class App(ctk.CTk):
                 on_qa=self.show_table_qa,
                 on_horoscope_auto=lambda: self.show_horoscope("auto"),
                 on_horoscope_date=lambda: self.show_horoscope("date"),
+                on_links=self.show_links,
             )
         )
 
@@ -99,6 +103,16 @@ class App(ctk.CTk):
         )
         self._header.set_mode(title)
         self._set_body(HoroscopeScreen(self._body, cars, templates, mode))
+
+    def show_links(self) -> None:
+        try:
+            cars = load_cars(AUTOS_PATH)
+            template = load_links_template(LINKS_PATH)
+        except (OSError, ValueError) as exc:
+            messagebox.showerror("Ошибка загрузки данных", str(exc), parent=self)
+            return
+        self._header.set_mode(WORK_MODE_LABELS["links"])
+        self._set_body(LinksScreen(self._body, cars, template))
 
     def show_table_qa(self) -> None:
         self._header.set_mode(TABLE_QA_LABEL)

@@ -8,6 +8,7 @@ from prompt_builder.paths import (
     DOCS_SAMPLES_DIR,
     HOROSCOPE_AUTO_PATH,
     HOROSCOPE_DATE_PATH,
+    LINKS_PATH,
     PROJECT_ROOT,
     REPAIR_PROMPTS_PATH,
     TUNING_PROMPTS_PATH,
@@ -23,6 +24,7 @@ class PathsTests(unittest.TestCase):
             TUNING_PROMPTS_PATH,
             HOROSCOPE_AUTO_PATH,
             HOROSCOPE_DATE_PATH,
+            LINKS_PATH,
         ):
             with self.subTest(path=path.name):
                 self.assertTrue(path.is_file(), f"missing {path}")

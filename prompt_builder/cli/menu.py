@@ -54,7 +54,7 @@ def select_car(cars: list[Car]) -> Car | None:
 def select_category() -> WorkMode | None:
     choices = [
         Choice(title=WORK_MODE_LABELS[mode], value=mode)
-        for mode in ("repair", "tuning", "horoscope_auto", "horoscope_date")
+        for mode in ("repair", "tuning", "links", "horoscope_auto", "horoscope_date")
     ]
     return _select("Категория:", choices)
 
@@ -165,6 +165,14 @@ def copy_and_report_horoscope_auto(car: Car, prompt_text: str) -> bool:
         return False
     print(f"  Авто:       {car.display_short()}")
     print(f"  Категория:  {WORK_MODE_LABELS['horoscope_auto']}\n")
+    return True
+
+
+def copy_and_report_links(car: Car, prompt_text: str) -> bool:
+    if not _copy_or_fail(prompt_text):
+        return False
+    print(f"  Авто:       {car.display_short()}")
+    print(f"  Категория:  {WORK_MODE_LABELS['links']}\n")
     return True
 
 

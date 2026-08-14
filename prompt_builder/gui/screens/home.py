@@ -17,12 +17,14 @@ class HomeScreen(ctk.CTkFrame):
         on_qa: Callable[[], None],
         on_horoscope_auto: Callable[[], None],
         on_horoscope_date: Callable[[], None],
+        on_links: Callable[[], None],
     ) -> None:
         super().__init__(master, fg_color="transparent")
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
         self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(4, weight=1)
 
         title = ctk.CTkLabel(
             self,
@@ -65,7 +67,7 @@ class HomeScreen(ctk.CTkFrame):
             action="Открыть описание",
             on_click=on_horoscope_auto,
         )
-        horoscope_auto_card.grid(row=3, column=0, sticky="nsew", padx=(32, 12), pady=(8, 24))
+        horoscope_auto_card.grid(row=3, column=0, sticky="nsew", padx=(32, 12), pady=(8, 8))
 
         horoscope_date_card = ModeCard(
             self,
@@ -74,4 +76,13 @@ class HomeScreen(ctk.CTkFrame):
             action="Открыть прогноз",
             on_click=on_horoscope_date,
         )
-        horoscope_date_card.grid(row=3, column=1, sticky="nsew", padx=(12, 32), pady=(8, 24))
+        horoscope_date_card.grid(row=3, column=1, sticky="nsew", padx=(12, 32), pady=(8, 8))
+
+        links_card = ModeCard(
+            self,
+            title=WORK_MODE_LABELS["links"],
+            description="Марка и модель из списка авто.\nВ буфер — только кнопка «Скопировать в буфер».",
+            action="Открыть поиск",
+            on_click=on_links,
+        )
+        links_card.grid(row=4, column=0, sticky="nsew", padx=(32, 12), pady=(8, 24))

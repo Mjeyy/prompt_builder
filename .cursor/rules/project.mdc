@@ -7,7 +7,7 @@ alwaysApply: true
 
 Layers: `data/` → `parsers` → `services` → `cli` / `gui`. Shared types in `models.py`.
 
-- Templates live only in `data/` (`autos.md`, `repair_prompts.md`, `tuning_prompts.md`, `horoscope_auto.md`, `horoscope_date.md`).
+- Templates live only in `data/` (`autos.md`, `repair_prompts.md`, `tuning_prompts.md`, `horoscope_auto.md`, `horoscope_date.md`, `links.md`).
 - All file paths go through `prompt_builder.paths`. Do not compute `PROJECT_ROOT` in screens or `main.py`.
 - Do not put markdown templates inside the Python package.
 - Terminal menus: `prompt_builder.cli`. Window: `prompt_builder.gui`. Do not import GUI from CLI.

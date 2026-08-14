@@ -3,6 +3,12 @@
 Формат основан на [Keep a Changelog](https://keepachangelog.com/ru/1.1.0/).
 Версии следуют [Semantic Versioning](https://semver.org/lang/ru/).
 
+## [Unreleased]
+
+### Added
+
+- Режим «Поиск ссылок»: шаблон `data/links.md`, марка и модель из списка авто; терминал и окно.
+
 ## [0.2.0] — 2026-08-14
 
 ### Breaking

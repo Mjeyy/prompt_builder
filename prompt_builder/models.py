@@ -3,7 +3,7 @@ from datetime import date
 from typing import Literal
 
 Category = Literal["repair", "tuning"]
-WorkMode = Literal["repair", "tuning", "horoscope_auto", "horoscope_date"]
+WorkMode = Literal["repair", "tuning", "links", "horoscope_auto", "horoscope_date"]
 HoroscopeMode = Literal["auto", "date"]
 
 CATEGORY_LABELS: dict[Category, str] = {
@@ -14,6 +14,7 @@ CATEGORY_LABELS: dict[Category, str] = {
 WORK_MODE_LABELS: dict[WorkMode, str] = {
     "repair": "Ремонт",
     "tuning": "Тюнинг",
+    "links": "Поиск ссылок",
     "horoscope_auto": "Гороскоп: описание авто",
     "horoscope_date": "Гороскоп: прогноз",
 }

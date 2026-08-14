@@ -6,6 +6,7 @@ from prompt_builder.cli.menu import (
     copy_and_report,
     copy_and_report_horoscope_auto,
     copy_and_report_horoscope_date,
+    copy_and_report_links,
     select_car,
     select_category,
     select_forecast_days,
@@ -24,25 +25,29 @@ from prompt_builder.models import (
 )
 from prompt_builder.parsers.autos import load_cars
 from prompt_builder.parsers.horoscope import load_horoscope_templates
+from prompt_builder.parsers.links import load_links_template
 from prompt_builder.parsers.prompts import load_prompt_sections
 from prompt_builder.paths import (
     AUTOS_PATH,
     HOROSCOPE_AUTO_PATH,
     HOROSCOPE_DATE_PATH,
+    LINKS_PATH,
     REPAIR_PROMPTS_PATH,
     TUNING_PROMPTS_PATH,
 )
 from prompt_builder.services.prompt_builder import (
     build_horoscope_auto_prompt,
     build_horoscope_date_prompt,
+    build_links_prompt,
 )
 
 
-def _load_data() -> tuple[list[Car], list[PromptSection], HoroscopeTemplates]:
+def _load_data() -> tuple[list[Car], list[PromptSection], HoroscopeTemplates, str]:
     cars = load_cars(AUTOS_PATH)
     sections = load_prompt_sections(REPAIR_PROMPTS_PATH, TUNING_PROMPTS_PATH)
     templates = load_horoscope_templates(HOROSCOPE_AUTO_PATH, HOROSCOPE_DATE_PATH)
-    return cars, sections, templates
+    links_template = load_links_template(LINKS_PATH)
+    return cars, sections, templates, links_template
 
 
 def _reset_work() -> tuple[None, None, None, str]:
@@ -51,7 +56,7 @@ def _reset_work() -> tuple[None, None, None, str]:
 
 def run() -> None:
     try:
-        cars, sections, horoscope = _load_data()
+        cars, sections, horoscope, links_template = _load_data()
     except (OSError, ValueError) as exc:
         print(f"Ошибка загрузки данных: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
@@ -95,6 +100,12 @@ def run() -> None:
         elif mode == "horoscope_auto":
             prompt_text = build_horoscope_auto_prompt(horoscope.auto, car)
             if not copy_and_report_horoscope_auto(car, prompt_text):
+                continue
+            action = select_post_action(include_other_section=False)
+
+        elif mode == "links":
+            prompt_text = build_links_prompt(links_template, car)
+            if not copy_and_report_links(car, prompt_text):
                 continue
             action = select_post_action(include_other_section=False)
 
