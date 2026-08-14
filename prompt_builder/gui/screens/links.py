@@ -23,7 +23,9 @@ class LinksScreen(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        self._car_picker = CarPickerPane(self, cars, on_select=self._on_car_selected)
+        self._car_picker = CarPickerPane(
+            self, cars, on_select=self._on_car_selected, short_labels=True
+        )
         self._car_picker.grid(row=0, column=0, sticky="nsew", padx=(24, 12), pady=20)
         self._build_work_pane()
         self._refresh_preview()

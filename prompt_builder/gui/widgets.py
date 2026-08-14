@@ -22,6 +22,7 @@ from prompt_builder.gui.theme import (
     ui_font,
 )
 from prompt_builder.models import Car
+from prompt_builder.services.cars import sorted_cars
 from prompt_builder.services.clipboard import ClipboardError, copy_to_clipboard
 
 T = TypeVar("T")
@@ -50,9 +51,16 @@ class SelectableList(ctk.CTkScrollableFrame):
     def selected(self) -> T | None:
         return self._selected
 
-    def set_items(self, items: Sequence[tuple[str, T]], selected: T | None = None) -> None:
+    def set_items(
+        self,
+        items: Sequence[tuple[str, T]],
+        selected: T | None = None,
+        empty_text: str | None = None,
+    ) -> None:
         self._items = list(items)
         self._selected = selected
+        if empty_text is not None:
+            self._empty_text = empty_text
         self._rebuild()
 
     def select(self, value: T | None) -> None:
@@ -108,20 +116,30 @@ class SelectableList(ctk.CTkScrollableFrame):
                 button.configure(fg_color="transparent", hover_color=SURFACE_ALT, text_color=TEXT)
 
 
+_SORT_FILE = "Как в файле"
+_SORT_ALPHA = "По алфавиту"
+_EMPTY_HIDDEN = "Все автомобили скрыты"
+_EMPTY_SEARCH = "Ничего не найдено"
+
+
 class CarPickerPane(ctk.CTkFrame):
     def __init__(
         self,
         master: Any,
         cars: Sequence[Car],
         on_select: Callable[[Car | None], None],
+        *,
+        short_labels: bool = False,
         **kwargs: object,
     ) -> None:
         super().__init__(master, fg_color=SURFACE, corner_radius=16, **kwargs)
         self._cars = list(cars)
         self._on_select = on_select
+        self._short_labels = short_labels
+        self._alphabetical = False
         self._car: Car | None = None
 
-        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
         ctk.CTkLabel(
@@ -132,9 +150,14 @@ class CarPickerPane(ctk.CTkFrame):
             anchor="w",
         ).grid(row=0, column=0, sticky="ew", padx=16, pady=(16, 8))
 
+        search_placeholder = (
+            "Поиск по марке и модели…"
+            if short_labels
+            else "Поиск по марке, модели, мотору…"
+        )
         self._search = ctk.CTkEntry(
             self,
-            placeholder_text="Поиск по марке, модели, мотору…",
+            placeholder_text=search_placeholder,
             font=ui_font(13),
             height=36,
             fg_color=SURFACE_ALT,
@@ -143,23 +166,40 @@ class CarPickerPane(ctk.CTkFrame):
         self._search.grid(row=1, column=0, sticky="ew", padx=16, pady=(0, 8))
         self._search.bind("<KeyRelease>", lambda _event: self._refresh_cars())
 
+        self._sort = ctk.CTkSegmentedButton(
+            self,
+            values=[_SORT_FILE, _SORT_ALPHA],
+            font=ui_font(13),
+            height=32,
+        )
+        self._sort.set(_SORT_FILE)
+        self._sort.grid(row=2, column=0, sticky="ew", padx=16, pady=(0, 8))
+
         self._car_list = SelectableList(self, on_select=self._on_car_selected)
-        self._car_list.grid(row=2, column=0, sticky="nsew", padx=10, pady=(0, 16))
+        self._car_list.grid(row=3, column=0, sticky="nsew", padx=10, pady=(0, 16))
+        self._sort.configure(command=self._on_sort_changed)
         self._refresh_cars()
 
     @property
     def selected(self) -> Car | None:
         return self._car
 
+    def _on_sort_changed(self, value: str) -> None:
+        self._alphabetical = value == _SORT_ALPHA
+        self._refresh_cars()
+
     def _on_car_selected(self, car: Car) -> None:
         self._car = car
         self._on_select(car)
 
+    def _car_label(self, car: Car) -> str:
+        return car.display_short() if self._short_labels else car.display()
+
     def _refresh_cars(self) -> None:
         query = self._search.get().strip().lower()
         items: list[tuple[str, Car]] = []
-        for car in self._cars:
-            label = car.display()
+        for car in sorted_cars(self._cars, alphabetical=self._alphabetical):
+            label = self._car_label(car)
             if query and query not in label.lower():
                 continue
             items.append((label, car))
@@ -167,7 +207,8 @@ class CarPickerPane(ctk.CTkFrame):
         if selected is None and self._car is not None:
             self._car = None
             self._on_select(None)
-        self._car_list.set_items(items, selected=selected)
+        empty_text = _EMPTY_HIDDEN if not self._cars else _EMPTY_SEARCH
+        self._car_list.set_items(items, selected=selected, empty_text=empty_text)
 
 
 class PromptPreviewPanel(ctk.CTkFrame):

@@ -15,12 +15,14 @@ from prompt_builder.models import (
     WorkMode,
 )
 from prompt_builder.parsers.prompts import sections_for_category
+from prompt_builder.services.cars import sorted_cars
 from prompt_builder.services.clipboard import ClipboardError, copy_to_clipboard
 from prompt_builder.services.prompt_builder import build_prompt
 
 T = TypeVar("T")
 
 _MANUAL = "__manual__"
+_SORT_TOGGLE = "__sort_toggle__"
 DATE_FORMAT_HINT = "ГГГГ-ММ-ДД"
 NEARBY_DATE_COUNT = 14
 
@@ -46,9 +48,23 @@ def _select(title: str, choices: list[Choice]) -> T | None:
     return questionary.select(title, choices=choices).ask()
 
 
-def select_car(cars: list[Car]) -> Car | None:
-    choices = [Choice(title=car.display(), value=car) for car in cars]
-    return _select("Выберите авто:", choices)
+def select_car(cars: list[Car], *, alphabetical: bool = False) -> tuple[Car | None, bool]:
+    while True:
+        ordered = sorted_cars(cars, alphabetical=alphabetical)
+        sort_title = (
+            "Показать как в файле"
+            if alphabetical
+            else "Показать по алфавиту (марка, модель, …)"
+        )
+        choices: list[Choice] = [Choice(title=sort_title, value=_SORT_TOGGLE)]
+        choices.extend(Choice(title=car.display(), value=car) for car in ordered)
+        selected = _select("Выберите авто:", choices)
+        if selected is None:
+            return None, alphabetical
+        if not isinstance(selected, Car):
+            alphabetical = not alphabetical
+            continue
+        return selected, alphabetical
 
 
 def select_category() -> WorkMode | None:

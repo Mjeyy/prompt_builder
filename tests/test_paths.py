@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from prompt_builder.paths import (
+    AUTOS_HIDDEN_PATH,
     AUTOS_PATH,
     DATA_DIR,
     DOCS_SAMPLES_DIR,
@@ -20,6 +21,7 @@ class PathsTests(unittest.TestCase):
         self.assertTrue(DATA_DIR.is_dir())
         for path in (
             AUTOS_PATH,
+            AUTOS_HIDDEN_PATH,
             REPAIR_PROMPTS_PATH,
             TUNING_PROMPTS_PATH,
             HOROSCOPE_AUTO_PATH,

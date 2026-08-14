@@ -21,6 +21,7 @@ WORK_MODE_LABELS: dict[WorkMode, str] = {
 
 BUILDER_LABEL = "Сборка промпта"
 TABLE_QA_LABEL = "Проверка таблиц"
+CARS_LIST_LABEL = "Список автомобилей"
 HOME_LABEL = "Главная"
 
 

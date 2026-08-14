@@ -6,6 +6,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 from prompt_builder.gui.clickfix import install_window_click_fixes, lower_frame_canvases
+from prompt_builder.gui.screens.cars_list import CarsListScreen
 from prompt_builder.gui.screens.home import HomeScreen
 from prompt_builder.gui.screens.horoscope import HoroscopeScreen
 from prompt_builder.gui.screens.links import LinksScreen
@@ -21,12 +22,20 @@ from prompt_builder.gui.theme import (
     apply_theme,
     ui_font,
 )
-from prompt_builder.models import BUILDER_LABEL, HOME_LABEL, TABLE_QA_LABEL, WORK_MODE_LABELS, HoroscopeMode
-from prompt_builder.parsers.autos import load_cars
+from prompt_builder.models import (
+    BUILDER_LABEL,
+    CARS_LIST_LABEL,
+    HOME_LABEL,
+    TABLE_QA_LABEL,
+    WORK_MODE_LABELS,
+    HoroscopeMode,
+)
+from prompt_builder.parsers.autos import load_cars, load_hidden_cars
 from prompt_builder.parsers.horoscope import load_horoscope_templates
 from prompt_builder.parsers.links import load_links_template
 from prompt_builder.parsers.prompts import load_prompt_sections
 from prompt_builder.paths import (
+    AUTOS_HIDDEN_PATH,
     AUTOS_PATH,
     HOROSCOPE_AUTO_PATH,
     HOROSCOPE_DATE_PATH,
@@ -34,6 +43,7 @@ from prompt_builder.paths import (
     REPAIR_PROMPTS_PATH,
     TUNING_PROMPTS_PATH,
 )
+from prompt_builder.services.cars import unique_make_model_cars, visible_cars
 
 
 class App(ctk.CTk):
@@ -76,12 +86,13 @@ class App(ctk.CTk):
                 on_horoscope_auto=lambda: self.show_horoscope("auto"),
                 on_horoscope_date=lambda: self.show_horoscope("date"),
                 on_links=self.show_links,
+                on_cars_list=self.show_cars_list,
             )
         )
 
     def show_builder(self) -> None:
         try:
-            cars = load_cars(AUTOS_PATH)
+            cars = visible_cars(load_cars(AUTOS_PATH), load_hidden_cars(AUTOS_HIDDEN_PATH))
             sections = load_prompt_sections(REPAIR_PROMPTS_PATH, TUNING_PROMPTS_PATH)
         except (OSError, ValueError) as exc:
             messagebox.showerror("Ошибка загрузки данных", str(exc), parent=self)
@@ -91,7 +102,7 @@ class App(ctk.CTk):
 
     def show_horoscope(self, mode: HoroscopeMode) -> None:
         try:
-            cars = load_cars(AUTOS_PATH)
+            cars = unique_make_model_cars(load_cars(AUTOS_PATH))
             templates = load_horoscope_templates(HOROSCOPE_AUTO_PATH, HOROSCOPE_DATE_PATH)
         except (OSError, ValueError) as exc:
             messagebox.showerror("Ошибка загрузки данных", str(exc), parent=self)
@@ -106,13 +117,23 @@ class App(ctk.CTk):
 
     def show_links(self) -> None:
         try:
-            cars = load_cars(AUTOS_PATH)
+            cars = unique_make_model_cars(load_cars(AUTOS_PATH))
             template = load_links_template(LINKS_PATH)
         except (OSError, ValueError) as exc:
             messagebox.showerror("Ошибка загрузки данных", str(exc), parent=self)
             return
         self._header.set_mode(WORK_MODE_LABELS["links"])
         self._set_body(LinksScreen(self._body, cars, template))
+
+    def show_cars_list(self) -> None:
+        try:
+            cars = load_cars(AUTOS_PATH)
+            hidden = load_hidden_cars(AUTOS_HIDDEN_PATH)
+        except (OSError, ValueError) as exc:
+            messagebox.showerror("Ошибка загрузки данных", str(exc), parent=self)
+            return
+        self._header.set_mode(CARS_LIST_LABEL)
+        self._set_body(CarsListScreen(self._body, cars, hidden, AUTOS_HIDDEN_PATH))
 
     def show_table_qa(self) -> None:
         self._header.set_mode(TABLE_QA_LABEL)

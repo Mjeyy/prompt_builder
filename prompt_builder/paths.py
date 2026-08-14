@@ -7,6 +7,7 @@ DOCS_DIR = PROJECT_ROOT / "docs"
 DOCS_SAMPLES_DIR = DOCS_DIR / "samples"
 
 AUTOS_PATH = DATA_DIR / "autos.md"
+AUTOS_HIDDEN_PATH = DATA_DIR / "autos_hidden.md"
 REPAIR_PROMPTS_PATH = DATA_DIR / "repair_prompts.md"
 TUNING_PROMPTS_PATH = DATA_DIR / "tuning_prompts.md"
 HOROSCOPE_AUTO_PATH = DATA_DIR / "horoscope_auto.md"

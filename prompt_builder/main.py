@@ -62,6 +62,7 @@ def run() -> None:
         raise SystemExit(1) from exc
 
     car: Car | None = None
+    alphabetical = False
     mode: WorkMode | None = None
     selection: Selection | None = None
     forecast: HoroscopeForecastSelection | None = None
@@ -69,7 +70,7 @@ def run() -> None:
 
     while True:
         if car is None:
-            car = select_car(cars)
+            car, alphabetical = select_car(cars, alphabetical=alphabetical)
             if car is None:
                 break
             mode, selection, forecast, prompt_text = _reset_work()

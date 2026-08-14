@@ -6,7 +6,7 @@ import customtkinter as ctk
 
 from prompt_builder.gui.theme import MUTED, TEXT, ui_font
 from prompt_builder.gui.widgets import ModeCard
-from prompt_builder.models import BUILDER_LABEL, TABLE_QA_LABEL, WORK_MODE_LABELS
+from prompt_builder.models import BUILDER_LABEL, CARS_LIST_LABEL, TABLE_QA_LABEL, WORK_MODE_LABELS
 
 
 class HomeScreen(ctk.CTkFrame):
@@ -18,6 +18,7 @@ class HomeScreen(ctk.CTkFrame):
         on_horoscope_auto: Callable[[], None],
         on_horoscope_date: Callable[[], None],
         on_links: Callable[[], None],
+        on_cars_list: Callable[[], None],
     ) -> None:
         super().__init__(master, fg_color="transparent")
         self.grid_columnconfigure(0, weight=1)
@@ -36,7 +37,7 @@ class HomeScreen(ctk.CTkFrame):
 
         subtitle = ctk.CTkLabel(
             self,
-            text="Выберите режим. Проверка таблиц доступна только в визуальной версии.",
+            text="Выберите режим. Проверка таблиц и список автомобилей доступны только в визуальной версии.",
             font=ui_font(14),
             text_color=MUTED,
         )
@@ -86,3 +87,12 @@ class HomeScreen(ctk.CTkFrame):
             on_click=on_links,
         )
         links_card.grid(row=4, column=0, sticky="nsew", padx=(32, 12), pady=(8, 24))
+
+        cars_list_card = ModeCard(
+            self,
+            title=CARS_LIST_LABEL,
+            description="Показать или скрыть авто в сборке ремонта и тюнинга.\nКаталог в data/autos.md не меняется.",
+            action="Открыть список",
+            on_click=on_cars_list,
+        )
+        cars_list_card.grid(row=4, column=1, sticky="nsew", padx=(12, 32), pady=(8, 24))
